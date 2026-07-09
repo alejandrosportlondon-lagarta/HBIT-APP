@@ -1,0 +1,80 @@
+# XcodeGen spec — source of truth for HBIT.xcodeproj (which is gitignored).
+# Regenerate after editing: `xcodegen generate`
+name: HBIT
+options:
+  bundleIdPrefix: com.hbit
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+packages:
+  AlarmEngine: { path: Packages/AlarmEngine }
+  ProofKit: { path: Packages/ProofKit }
+  MorningKit: { path: Packages/MorningKit }
+  SyncKit: { path: Packages/SyncKit }
+  PaywallKit: { path: Packages/PaywallKit }
+  Supabase: { url: "https://github.com/supabase/supabase-swift", from: 2.20.0 }
+  Sentry: { url: "https://github.com/getsentry/sentry-cocoa", from: 8.36.0 }
+  PostHog: { url: "https://github.com/PostHog/posthog-ios", from: 3.15.0 }
+
+targets:
+  HBIT:
+    type: application
+    platform: iOS
+    sources:
+      - HBIT
+    configFiles:
+      Debug: Config/Config.xcconfig
+      Release: Config/Config.xcconfig
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.hbit.app
+        SWIFT_VERSION: "6.0"
+        SWIFT_STRICT_CONCURRENCY: complete
+        CODE_SIGN_STYLE: Automatic
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 0.1.0
+        TARGETED_DEVICE_FAMILY: 1
+        ENABLE_USER_SCRIPT_SANDBOXING: YES
+    info:
+      path: HBIT/Info.plist
+      properties:
+        CFBundleDisplayName: HBIT
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        ITSAppUsesNonExemptEncryption: false
+        CFBundleURLTypes:
+          - CFBundleURLName: com.hbit.app
+            CFBundleURLSchemes: [hbit]
+        # Injected from Config/Config.xcconfig — empty values disable the backend.
+        SUPABASE_URL: $(SUPABASE_URL)
+        SUPABASE_ANON_KEY: $(SUPABASE_ANON_KEY)
+        SENTRY_DSN: $(SENTRY_DSN)
+        POSTHOG_API_KEY: $(POSTHOG_API_KEY)
+        POSTHOG_HOST: $(POSTHOG_HOST)
+    entitlements:
+      path: HBIT/HBIT.entitlements
+      properties:
+        com.apple.developer.applesignin: [Default]
+    dependencies:
+      - package: AlarmEngine
+      - package: ProofKit
+      - package: MorningKit
+      - package: SyncKit
+      - package: PaywallKit
+      - package: Supabase
+        product: Supabase
+      - package: Sentry
+        product: Sentry
+      - package: PostHog
+        product: PostHog
+
+schemes:
+  HBIT:
+    build:
+      targets:
+        HBIT: all
+    run:
+      config: Debug
+    test:
+      config: Debug

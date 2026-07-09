@@ -5,15 +5,15 @@ PRD reference: `docs/PRD.md`. Conventions: `CLAUDE.md`.
 
 ## Milestone 0 — Project foundation (week 1–2)
 
-- [ ] Xcode project: SwiftUI app target `HBIT`, iOS 17 min, Swift 6 strict concurrency
-- [ ] Local SPM packages scaffolded: `AlarmEngine`, `ProofKit`, `MorningKit`, `SyncKit`, `PaywallKit` — each with a test target
-- [ ] SwiftData models: `Morning`, `Mission`, `AlarmConfig`, `ProofReference`, `StreakState`
-- [ ] Supabase project: schema migration for `profiles`, `mornings`, `missions`, `proof_references`; RLS policies (users read/write only their own rows)
-- [ ] Auth: Sign in with Apple + email magic link (Supabase Auth)
-- [ ] Design tokens: colors (#0F1115 bg, #181B22 surface, #4ADE80 primary, #FF6B35 accent, #22C55E success, #F8FAFC text, #94A3B8 secondary), type scale, spacing scale — as a `DesignSystem` enum
-- [ ] CI: GitHub Actions — build + test on PR
-- [ ] Sentry + PostHog SDK integrated behind a `Telemetry` facade (no direct SDK calls in features)
-- [ ] `docs/analytics-events.md` created with initial funnel events
+- [x] Xcode project: SwiftUI app target `HBIT`, iOS 17 min, Swift 6 strict concurrency *(generated from `project.yml` via XcodeGen — see ADR 000)*
+- [x] Local SPM packages scaffolded: `AlarmEngine`, `ProofKit`, `MorningKit`, `SyncKit`, `PaywallKit` — each with a test target
+- [x] SwiftData models: `Morning`, `Mission`, `AlarmConfig`, `ProofReference`, `StreakState`
+- [ ] Supabase project: schema migration for `profiles`, `mornings`, `missions`, `proof_references`; RLS policies (users read/write only their own rows) *(migration written in `supabase/migrations/`; **blocked**: needs an HBIT Supabase project to apply it to)*
+- [ ] Auth: Sign in with Apple + email magic link (Supabase Auth) *(client implemented; **blocked**: needs Supabase keys + Apple provider config + Apple Developer App ID)*
+- [x] Design tokens: colors (#0F1115 bg, #181B22 surface, #4ADE80 primary, #FF6B35 accent, #22C55E success, #F8FAFC text, #94A3B8 secondary), type scale, spacing scale — as a `DesignSystem` enum
+- [x] CI: GitHub Actions — build + test on PR
+- [x] Sentry + PostHog SDK integrated behind a `Telemetry` facade (no direct SDK calls in features) *(keys come later via `Config.xcconfig`; backends stay disabled until then)*
+- [x] `docs/analytics-events.md` created with initial funnel events
 
 **Exit criteria:** app builds, signs in, writes a dummy Morning locally and syncs it to Supabase; CI green.
 

@@ -1,0 +1,20 @@
+included:
+  - HBIT
+  - Packages
+excluded:
+  - "**/.build"
+
+disabled_rules:
+  - todo
+  - trailing_comma
+
+line_length:
+  warning: 140
+  ignores_comments: true
+
+identifier_name:
+  min_length: 2
+  excluded: [x, y, i, id]
+
+nesting:
+  type_level: 2
