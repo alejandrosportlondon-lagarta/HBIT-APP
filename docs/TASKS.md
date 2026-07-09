@@ -5,7 +5,7 @@ PRD reference: `docs/PRD.md`. Conventions: `CLAUDE.md`.
 
 ## Milestone 0 — Project foundation (week 1–2)
 
-- [x] Xcode project: SwiftUI app target `HBIT`, iOS 17 min, Swift 6 strict concurrency *(generated from `project.yml` via XcodeGen — see ADR 000)*
+- [x] Xcode project: SwiftUI app target `HBIT`, iOS 17 min, Swift 6 strict concurrency *(checked-in `HBIT.xcodeproj`, Xcode 16+ — see ADR 001)*
 - [x] Local SPM packages scaffolded: `AlarmEngine`, `ProofKit`, `MorningKit`, `SyncKit`, `PaywallKit` — each with a test target
 - [x] SwiftData models: `Morning`, `Mission`, `AlarmConfig`, `ProofReference`, `StreakState`
 - [ ] Supabase project: schema migration for `profiles`, `mornings`, `missions`, `proof_references`; RLS policies (users read/write only their own rows) *(migration written in `supabase/migrations/`; **blocked**: needs an HBIT Supabase project to apply it to)*

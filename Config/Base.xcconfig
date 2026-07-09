@@ -1,0 +1,15 @@
+// Committed defaults — the app builds and runs with these (local-only mode,
+// all backends disabled). Do NOT put real keys here.
+//
+// Real keys go in Config/Config.xcconfig (gitignored). Create it by
+// duplicating Config.example.xcconfig — in Xcode: right-click
+// Config.example.xcconfig → Duplicate, rename to Config.xcconfig, fill in.
+// The include below is optional: missing file is fine.
+
+SUPABASE_URL =
+SUPABASE_ANON_KEY =
+SENTRY_DSN =
+POSTHOG_API_KEY =
+POSTHOG_HOST = https:/$()/eu.i.posthog.com
+
+#include? "Config.xcconfig"

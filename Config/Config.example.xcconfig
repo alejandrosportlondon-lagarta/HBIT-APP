@@ -1,6 +1,7 @@
-// Copy this file to Config/Config.xcconfig (gitignored) and fill in real
-// values. Empty values are fine — the app runs local-only and disables the
-// corresponding backend.
+// Duplicate this file as Config/Config.xcconfig (gitignored) and fill in
+// real values — in Xcode: right-click this file → Duplicate, then rename.
+// This file is optional: without it the app runs local-only with every
+// backend disabled (defaults come from Base.xcconfig).
 //
 // NOTE: "//" starts a comment in xcconfig, so URLs must be written with the
 // $() escape as below.

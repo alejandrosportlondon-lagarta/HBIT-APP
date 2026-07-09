@@ -23,12 +23,6 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
-      - name: Install XcodeGen
-        run: brew install xcodegen
-      - name: Create placeholder config
-        run: cp Config/Config.example.xcconfig Config/Config.xcconfig
-      - name: Generate Xcode project
-        run: xcodegen generate
       - name: Build (iOS Simulator)
         run: |
           set -o pipefail
