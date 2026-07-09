@@ -1,6 +1,6 @@
 # ADR 000 — Generate the Xcode project with XcodeGen
 
-**Status:** accepted · **Date:** 2026-07-09 · **Milestone:** 0
+**Status:** superseded by [ADR 001](001-checked-in-xcodeproj.md) · **Date:** 2026-07-09 · **Milestone:** 0
 
 ## Context
 

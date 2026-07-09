@@ -1,0 +1,419 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D00000000000000000000041 /* AlarmEngine in Frameworks */ = {isa = PBXBuildFile; productRef = D00000000000000000000031 /* AlarmEngine */; };
+		D00000000000000000000042 /* ProofKit in Frameworks */ = {isa = PBXBuildFile; productRef = D00000000000000000000032 /* ProofKit */; };
+		D00000000000000000000043 /* MorningKit in Frameworks */ = {isa = PBXBuildFile; productRef = D00000000000000000000033 /* MorningKit */; };
+		D00000000000000000000044 /* SyncKit in Frameworks */ = {isa = PBXBuildFile; productRef = D00000000000000000000034 /* SyncKit */; };
+		D00000000000000000000045 /* PaywallKit in Frameworks */ = {isa = PBXBuildFile; productRef = D00000000000000000000035 /* PaywallKit */; };
+		D00000000000000000000046 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = D00000000000000000000036 /* Supabase */; };
+		D00000000000000000000047 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = D00000000000000000000037 /* Sentry */; };
+		D00000000000000000000048 /* PostHog in Frameworks */ = {isa = PBXBuildFile; productRef = D00000000000000000000038 /* PostHog */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		D00000000000000000000004 /* HBIT.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HBIT.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D00000000000000000000012 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		D00000000000000000000013 /* Config.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.example.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D00000000000000000000010 /* Exceptions for "HBIT" folder */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				HBIT.entitlements,
+				Info.plist,
+			);
+			target = D00000000000000000000005 /* HBIT */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		D0000000000000000000000F /* HBIT */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D00000000000000000000010 /* Exceptions for "HBIT" folder */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = HBIT;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D0000000000000000000000D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D00000000000000000000041 /* AlarmEngine in Frameworks */,
+				D00000000000000000000042 /* ProofKit in Frameworks */,
+				D00000000000000000000043 /* MorningKit in Frameworks */,
+				D00000000000000000000044 /* SyncKit in Frameworks */,
+				D00000000000000000000045 /* PaywallKit in Frameworks */,
+				D00000000000000000000046 /* Supabase in Frameworks */,
+				D00000000000000000000047 /* Sentry in Frameworks */,
+				D00000000000000000000048 /* PostHog in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D00000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				D0000000000000000000000F /* HBIT */,
+				D00000000000000000000011 /* Config */,
+				D00000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D00000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D00000000000000000000004 /* HBIT.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D00000000000000000000011 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				D00000000000000000000012 /* Base.xcconfig */,
+				D00000000000000000000013 /* Config.example.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D00000000000000000000005 /* HBIT */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D00000000000000000000009 /* Build configuration list for PBXNativeTarget "HBIT" */;
+			buildPhases = (
+				D0000000000000000000000C /* Sources */,
+				D0000000000000000000000D /* Frameworks */,
+				D0000000000000000000000E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D0000000000000000000000F /* HBIT */,
+			);
+			name = HBIT;
+			packageProductDependencies = (
+				D00000000000000000000031 /* AlarmEngine */,
+				D00000000000000000000032 /* ProofKit */,
+				D00000000000000000000033 /* MorningKit */,
+				D00000000000000000000034 /* SyncKit */,
+				D00000000000000000000035 /* PaywallKit */,
+				D00000000000000000000036 /* Supabase */,
+				D00000000000000000000037 /* Sentry */,
+				D00000000000000000000038 /* PostHog */,
+			);
+			productName = HBIT;
+			productReference = D00000000000000000000004 /* HBIT.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D00000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					D00000000000000000000005 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+				};
+			};
+			buildConfigurationList = D00000000000000000000006 /* Build configuration list for PBXProject "HBIT" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D00000000000000000000002;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D00000000000000000000021 /* XCLocalSwiftPackageReference "Packages/AlarmEngine" */,
+				D00000000000000000000022 /* XCLocalSwiftPackageReference "Packages/ProofKit" */,
+				D00000000000000000000023 /* XCLocalSwiftPackageReference "Packages/MorningKit" */,
+				D00000000000000000000024 /* XCLocalSwiftPackageReference "Packages/SyncKit" */,
+				D00000000000000000000025 /* XCLocalSwiftPackageReference "Packages/PaywallKit" */,
+				D00000000000000000000026 /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				D00000000000000000000027 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+				D00000000000000000000028 /* XCRemoteSwiftPackageReference "posthog-ios" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D00000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D00000000000000000000005 /* HBIT */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D0000000000000000000000E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D0000000000000000000000C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D00000000000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		D00000000000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D0000000000000000000000A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D00000000000000000000012 /* Base.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = HBIT/HBIT.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HBIT/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hbit.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		D0000000000000000000000B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D00000000000000000000012 /* Base.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = HBIT/HBIT.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HBIT/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hbit.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D00000000000000000000006 /* Build configuration list for PBXProject "HBIT" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D00000000000000000000007 /* Debug */,
+				D00000000000000000000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D00000000000000000000009 /* Build configuration list for PBXNativeTarget "HBIT" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D0000000000000000000000A /* Debug */,
+				D0000000000000000000000B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		D00000000000000000000021 /* XCLocalSwiftPackageReference "Packages/AlarmEngine" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/AlarmEngine;
+		};
+		D00000000000000000000022 /* XCLocalSwiftPackageReference "Packages/ProofKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/ProofKit;
+		};
+		D00000000000000000000023 /* XCLocalSwiftPackageReference "Packages/MorningKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/MorningKit;
+		};
+		D00000000000000000000024 /* XCLocalSwiftPackageReference "Packages/SyncKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/SyncKit;
+		};
+		D00000000000000000000025 /* XCLocalSwiftPackageReference "Packages/PaywallKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/PaywallKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D00000000000000000000026 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase/supabase-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.20.0;
+			};
+		};
+		D00000000000000000000027 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.36.0;
+			};
+		};
+		D00000000000000000000028 /* XCRemoteSwiftPackageReference "posthog-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PostHog/posthog-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.15.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D00000000000000000000031 /* AlarmEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AlarmEngine;
+		};
+		D00000000000000000000032 /* ProofKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ProofKit;
+		};
+		D00000000000000000000033 /* MorningKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MorningKit;
+		};
+		D00000000000000000000034 /* SyncKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SyncKit;
+		};
+		D00000000000000000000035 /* PaywallKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PaywallKit;
+		};
+		D00000000000000000000036 /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D00000000000000000000026 /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+		D00000000000000000000037 /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D00000000000000000000027 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
+		};
+		D00000000000000000000038 /* PostHog */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D00000000000000000000028 /* XCRemoteSwiftPackageReference "posthog-ios" */;
+			productName = PostHog;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = D00000000000000000000001 /* Project object */;
+}

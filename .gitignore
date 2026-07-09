@@ -3,9 +3,7 @@ Config/Config.xcconfig
 .env
 .env.*
 
-# Xcode
-*.xcodeproj
-!project.yml
+# Xcode (HBIT.xcodeproj is checked in; user state is not)
 xcuserdata/
 *.xcuserstate
 DerivedData/
