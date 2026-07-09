@@ -1,0 +1,26 @@
+# Secrets — never commit real config (Config.example.xcconfig IS committed)
+Config/Config.xcconfig
+.env
+.env.*
+
+# Xcode
+*.xcodeproj
+!project.yml
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# SwiftPM
+.build/
+.swiftpm/
+Package.resolved
+
+# macOS
+.DS_Store
+
+# CI / tooling
+*.log
