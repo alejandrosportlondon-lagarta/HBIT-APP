@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  package-tests:
+    name: Test ${{ matrix.package }}
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [AlarmEngine, ProofKit, MorningKit, SyncKit, PaywallKit]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: swift test --package-path Packages/${{ matrix.package }}
+
+  app-build:
+    name: Build HBIT app
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Create placeholder config
+        run: cp Config/Config.example.xcconfig Config/Config.xcconfig
+      - name: Generate Xcode project
+        run: xcodegen generate
+      - name: Build (iOS Simulator)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project HBIT.xcodeproj \
+            -scheme HBIT \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions
+
+  lint:
+    name: SwiftLint
+    runs-on: ubuntu-latest
+    container: ghcr.io/realm/swiftlint:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint
+        run: swiftlint --strict --reporter github-actions-logging
