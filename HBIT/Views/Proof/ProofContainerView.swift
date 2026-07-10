@@ -29,7 +29,10 @@ struct ProofContainerView: View {
 
     private var placeholder: some View {
         VStack(spacing: DesignSystem.Spacing.lg) {
-            Text("No proof configured for this alarm (test alarm).")
+            Text(
+                "No alarm is configured yet, so this test alarm has no proof. Set an alarm "
+                    + "with a proof on the home screen, then ring a test alarm to exercise it."
+            )
                 .font(DesignSystem.Typography.body)
                 .foregroundStyle(DesignSystem.Colors.textSecondary)
                 .multilineTextAlignment(.center)
