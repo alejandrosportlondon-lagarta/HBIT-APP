@@ -37,7 +37,10 @@ struct RingingView: View {
             }
             Button("Keep trying", role: .cancel) {}
         } message: {
-            Text("The exit costs \(exitCounter.currentTapCost()) taps on a moving target, records this morning as a LOSS, and gets 100 taps more expensive each use (resets after 30 days).")
+            Text(
+                "The exit costs \(exitCounter.currentTapCost()) taps on a moving target, records this "
+                    + "morning as a LOSS, and gets 100 taps more expensive each use (resets after 30 days)."
+            )
         }
         .sheet(isPresented: $showingChallenge) {
             EmergencyExitChallengeView(requiredTaps: exitCounter.currentTapCost()) {

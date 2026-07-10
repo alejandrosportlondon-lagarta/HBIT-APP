@@ -17,7 +17,10 @@ struct PhotoRegistrationView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: DesignSystem.Spacing.md) {
-                Text("Photograph a fixed spot away from your bed. Every morning you'll re-take this exact shot to dismiss the alarm — the walk is the point.")
+                Text(
+                    "Photograph a fixed spot away from your bed. Every morning you'll re-take "
+                        + "this exact shot to dismiss the alarm — the walk is the point."
+                )
                     .font(DesignSystem.Typography.body)
                     .foregroundStyle(DesignSystem.Colors.textSecondary)
                     .multilineTextAlignment(.center)
