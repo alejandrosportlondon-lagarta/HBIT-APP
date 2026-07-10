@@ -111,17 +111,24 @@ extension BarcodeScannerViewController: AVCaptureMetadataOutputObjectsDelegate {
         didOutput metadataObjects: [AVMetadataObject],
         from connection: AVCaptureConnection
     ) {
+        // Extract Sendable values before crossing into the main actor —
+        // AVMetadataObject itself must not leave this isolation region.
+        guard
+            let object = metadataObjects.compactMap({ $0 as? AVMetadataMachineReadableCodeObject }).first,
+            let payload = object.stringValue
+        else { return }
+        let symbology = object.type.rawValue
         // The delegate queue is .main (set in configureCamera).
         MainActor.assumeIsolated {
-            guard
-                let object = metadataObjects.compactMap({ $0 as? AVMetadataMachineReadableCodeObject }).first,
-                let payload = object.stringValue
-            else { return }
-            let now = Date()
-            if payload == lastPayload, now.timeIntervalSince(lastEmission) < 2 { return }
-            lastPayload = payload
-            lastEmission = now
-            onCode?(payload, object.type.rawValue)
+            emit(payload: payload, symbology: symbology)
         }
+    }
+
+    private func emit(payload: String, symbology: String) {
+        let now = Date()
+        if payload == lastPayload, now.timeIntervalSince(lastEmission) < 2 { return }
+        lastPayload = payload
+        lastEmission = now
+        onCode?(payload, symbology)
     }
 }
