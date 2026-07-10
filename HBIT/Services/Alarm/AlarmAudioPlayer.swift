@@ -48,8 +48,8 @@ final class AlarmAudioPlayer {
 
         var samples = [Int16](repeating: 0, count: totalSamples)
         for i in 0..<toneSamples {
-            let t = Double(i) / Double(sampleRate)
-            var amplitude = sin(2 * .pi * 880 * t)
+            let time = Double(i) / Double(sampleRate)
+            var amplitude = sin(2 * .pi * 880 * time)
             if i < fadeSamples {
                 amplitude *= Double(i) / Double(fadeSamples)
             } else if i > toneSamples - fadeSamples {
@@ -59,9 +59,9 @@ final class AlarmAudioPlayer {
         }
 
         var data = Data()
-        func appendASCII(_ s: String) { data.append(contentsOf: Array(s.utf8)) }
-        func append32(_ v: UInt32) { withUnsafeBytes(of: v.littleEndian) { data.append(contentsOf: $0) } }
-        func append16(_ v: UInt16) { withUnsafeBytes(of: v.littleEndian) { data.append(contentsOf: $0) } }
+        func appendASCII(_ text: String) { data.append(contentsOf: Array(text.utf8)) }
+        func append32(_ value: UInt32) { withUnsafeBytes(of: value.littleEndian) { data.append(contentsOf: $0) } }
+        func append16(_ value: UInt16) { withUnsafeBytes(of: value.littleEndian) { data.append(contentsOf: $0) } }
 
         let dataSize = UInt32(totalSamples * 2)
         appendASCII("RIFF")

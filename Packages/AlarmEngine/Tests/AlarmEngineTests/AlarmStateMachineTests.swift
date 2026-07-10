@@ -49,15 +49,13 @@ struct AlarmStateMachineTests {
 
     @Test("the transition table is exactly the eight legal transitions")
     func transitionTableIsExhaustive() {
-        var legal: [(AlarmState, AlarmEvent, AlarmState)] = []
+        var legalCount = 0
         for state in AlarmState.allCases {
-            for event in AlarmEvent.allCases {
-                if let next = AlarmStateMachine.nextState(from: state, on: event) {
-                    legal.append((state, event, next))
-                }
+            for event in AlarmEvent.allCases where AlarmStateMachine.nextState(from: state, on: event) != nil {
+                legalCount += 1
             }
         }
-        #expect(legal.count == 8)
+        #expect(legalCount == 8)
         // Invalid examples that must stay invalid:
         #expect(AlarmStateMachine.nextState(from: .scheduled, on: .beginProof) == nil)
         #expect(AlarmStateMachine.nextState(from: .scheduled, on: .expire) == nil)
