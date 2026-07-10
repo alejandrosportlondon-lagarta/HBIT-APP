@@ -89,7 +89,7 @@ final class AuthService {
 
 /// The server-side emergency-exit state on `profiles` (survives
 /// reinstalls). Best-effort: every call is safe to fail offline.
-struct EmergencyExitProfileState: Codable {
+struct EmergencyExitProfileState: Codable, Sendable {
     let uses: Int
     let lastUsedAt: Date?
 
@@ -100,8 +100,16 @@ struct EmergencyExitProfileState: Codable {
 }
 
 extension AuthService {
-    func fetchEmergencyExitProfile() async -> EmergencyExitProfileState? {
-        guard let client = supabaseClient, case .signedIn(let userID) = state else { return nil }
+    private var signedInUserID: UUID? {
+        if case .signedIn(let userID) = state { return userID }
+        return nil
+    }
+
+    /// Nonisolated so the non-Sendable Postgrest response never crosses an
+    /// actor boundary — only the Sendable result does.
+    nonisolated func fetchEmergencyExitProfile() async -> EmergencyExitProfileState? {
+        let context = await MainActor.run { (client: supabaseClient, userID: signedInUserID) }
+        guard let client = context.client, let userID = context.userID else { return nil }
         return try? await client
             .from("profiles")
             .select("emergency_exit_uses, emergency_exit_last_used_at")
@@ -111,8 +119,9 @@ extension AuthService {
             .value
     }
 
-    func pushEmergencyExitProfile(uses: Int, lastUsedAt: Date?) async {
-        guard let client = supabaseClient, case .signedIn(let userID) = state else { return }
+    nonisolated func pushEmergencyExitProfile(uses: Int, lastUsedAt: Date?) async {
+        let context = await MainActor.run { (client: supabaseClient, userID: signedInUserID) }
+        guard let client = context.client, let userID = context.userID else { return }
         let update = EmergencyExitProfileState(uses: uses, lastUsedAt: lastUsedAt)
         _ = try? await client
             .from("profiles")
