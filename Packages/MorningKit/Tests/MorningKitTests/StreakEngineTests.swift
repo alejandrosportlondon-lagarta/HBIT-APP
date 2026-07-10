@@ -16,7 +16,7 @@ struct MorningDateKeyTests {
     @Test("the same instant is a different day in different timezones (timezone travel)")
     func timezoneTravel() {
         // 2026-07-10 01:00 UTC: already the 10th in Tokyo, still the 9th in New York.
-        let instant = Date(timeIntervalSince1970: 1_783_990_800)
+        let instant = Date(timeIntervalSince1970: 1_783_645_200)
         let tokyo = MorningDateKey.key(for: instant, in: TimeZone(identifier: "Asia/Tokyo")!)
         let newYork = MorningDateKey.key(for: instant, in: TimeZone(identifier: "America/New_York")!)
         #expect(tokyo == "2026-07-10")
