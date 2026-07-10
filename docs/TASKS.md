@@ -51,12 +51,12 @@ PRD reference: `docs/PRD.md`. Conventions: `CLAUDE.md`.
 
 ## Milestone 4 — Mornings: missions, score, streak, lock (week 9–10)
 
-- [ ] Morning mission list: 3–5 items, templates (drink water, push-ups, read, no-phone, custom); check-off interaction with score animation
-- [ ] Proof-attached missions (Pro): attach barcode or photo proof to any mission
-- [ ] Today's Score: weighted formula (wake-on-time ≈ 40%; remainder split across missions); morning closes at user-set deadline; score locks
-- [ ] Goal lock: wake time + mission list immutable from T-4h until morning close; countdown shown in UI
-- [ ] Streak engine: consecutive WIN mornings; history strip (last 30 days) on home screen; streak logic fully unit-tested incl. timezone travel + DST
-- [ ] Home screen: next alarm, streak, history strip, today's state
+- [x] Morning mission list: 3–5 items, templates (drink water, push-ups, read, no-phone, custom); check-off interaction with score animation
+- [x] Proof-attached missions (Pro): attach barcode or photo proof to any mission
+- [x] Today's Score: weighted formula (wake-on-time ≈ 40%; remainder split across missions); morning closes at user-set deadline; score locks *(deadline = 2/3/4h after wake target, default 3 — implementation call pending the real PRD)*
+- [x] Goal lock: wake time + mission list immutable from T-4h until morning close; countdown shown in UI
+- [x] Streak engine: consecutive WIN mornings; history strip (last 30 days) on home screen; streak logic fully unit-tested incl. timezone travel + DST
+- [x] Home screen: next alarm, streak, history strip, today's state
 
 **Exit criteria:** full loop demo — set alarm at night, wake, proof, check, complete missions, score locks, streak increments.
 

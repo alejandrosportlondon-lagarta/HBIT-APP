@@ -9,6 +9,7 @@ struct HBITApp: App {
     @State private var auth: AuthService
     @State private var alarmCoordinator: AlarmCoordinator
     @State private var emergencyExitCounter = EmergencyExitCounter()
+    @State private var morningLedger = MorningLedger()
     /// Retained for the app's lifetime; registered in init so a
     /// notification tap that cold-starts the app is not missed.
     private let notificationDelegate: AlarmNotificationDelegate
@@ -69,9 +70,11 @@ struct HBITApp: App {
                 .environment(auth)
                 .environment(alarmCoordinator)
                 .environment(emergencyExitCounter)
+                .environment(morningLedger)
                 .preferredColorScheme(.dark)
                 .task {
-                    alarmCoordinator.configure(modelContext: modelContainer.mainContext)
+                    morningLedger.configure(modelContext: modelContainer.mainContext)
+                    alarmCoordinator.configure(modelContext: modelContainer.mainContext, ledger: morningLedger)
                     alarmCoordinator.resume()
                     await auth.restoreSession()
                     // Reinstall-proof escalation: pull the server-side

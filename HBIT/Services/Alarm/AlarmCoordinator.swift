@@ -37,6 +37,7 @@ final class AlarmCoordinator {
     private let audio = AlarmAudioPlayer()
     private let clockMonitor = ClockIntegrityMonitor()
     private var modelContext: ModelContext?
+    private var ledger: MorningLedger?
     private var expiryWatchdog: Task<Void, Never>?
     private(set) var wakeUpCheck: WakeUpCheckController?
 
@@ -53,13 +54,34 @@ final class AlarmCoordinator {
         self.store = store
     }
 
-    func configure(modelContext: ModelContext) {
+    func configure(modelContext: ModelContext, ledger: MorningLedger) {
         self.modelContext = modelContext
+        self.ledger = ledger
         if wakeUpCheck == nil {
             wakeUpCheck = WakeUpCheckController(scheduler: scheduler, store: store) { [weak self] in
                 await self?.rescheduleFromConfig()
             }
         }
+    }
+
+    /// The goal lock: wake time + missions are immutable from T-4h until
+    /// the morning closes.
+    func goalLockPhase(now: Date = .now) -> GoalLock.Phase {
+        GoalLock.phase(
+            now: now,
+            nextFireDate: nextFireDate,
+            morningCloseAt: ledger?.morningCloseAt(now: now)
+        )
+    }
+
+    /// User-initiated alarm changes respect the goal lock; internal
+    /// rescheduling (tomorrow's occurrence after a finish) does not.
+    func userUpdateAlarm(config: AlarmConfig) async {
+        guard case .open = goalLockPhase() else {
+            userWarning = "Goal locked — wake time and missions can't change until this morning closes."
+            return
+        }
+        await scheduleAlarm(config: config)
     }
 
     var nextFireDate: Date? {
@@ -150,6 +172,7 @@ final class AlarmCoordinator {
     /// with the ring window (ADR 002).
     func resume(now: Date = .now) {
         clockMonitor.observe(now: now)
+        ledger?.finalizeDueMornings(now: now)
         guard let snapshot = store.snapshot else { return }
         activeSnapshot = snapshot
         machine = AlarmStateMachine(state: snapshot.state)
@@ -336,37 +359,17 @@ final class AlarmCoordinator {
         activeSnapshot = snapshot
     }
 
-    /// One row per day: today's morning is created or updated in the local
-    /// store; SyncKit reconciles it to Supabase later.
+    /// Hands the outcome to the ledger, which owns the morning record,
+    /// mission snapshot, provisional score and streak.
     private func recordMorning(result: MorningResult, wakeActual: Date?, snapshot: AlarmRuntimeSnapshot?) {
-        guard let modelContext, let snapshot else { return }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        formatter.timeZone = .current
-        let dateKey = formatter.string(from: snapshot.fireDate)
-
-        let tampered = clockMonitor.consumeTamperFlag()
-        let descriptor = FetchDescriptor<Morning>(predicate: #Predicate { $0.dateKey == dateKey })
-        if let existing = try? modelContext.fetch(descriptor).first {
-            existing.result = result
-            existing.wakeActual = wakeActual
-            existing.updatedAt = .now
-            existing.syncStatus = .pending
-            existing.clockTampered = existing.clockTampered || tampered
-        } else {
-            let morning = Morning(
-                dateKey: dateKey,
-                wakeTarget: snapshot.fireDate,
-                wakeActual: wakeActual,
-                result: result
-            )
-            morning.clockTampered = tampered
-            modelContext.insert(morning)
-        }
-        Telemetry.track(.morningClosed, properties: [
-            "result": result.rawValue,
-            "clock_tampered": String(tampered)
-        ])
+        guard let snapshot else { return }
+        ledger?.record(
+            result: result,
+            wakeActual: wakeActual,
+            wakeTarget: snapshot.fireDate,
+            alarmID: snapshot.alarmID,
+            clockTampered: clockMonitor.consumeTamperFlag()
+        )
     }
 
     private func rescheduleFromConfig() async {
