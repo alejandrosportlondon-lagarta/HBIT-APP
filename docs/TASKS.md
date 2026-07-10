@@ -31,12 +31,12 @@ PRD reference: `docs/PRD.md`. Conventions: `CLAUDE.md`.
 
 ## Milestone 2 — Proof system, part 1 (week 5–6)
 
-- [ ] `Proof` protocol in ProofKit: `configure() → ProofReference`, `verify() async → ProofResult`
-- [ ] Math proof: 3 difficulty levels, generated locally, keyboard UX usable half-asleep (large targets)
-- [ ] Steps proof: CoreMotion pedometer, walk N steps (configurable 10–100), live count on screen
-- [ ] Barcode/QR proof: register any code via camera; dismissal scan must match registered payload; fully offline
-- [ ] Proof selection + configuration flow in alarm settings
-- [ ] Unit tests: proof state machines; barcode payload matching edge cases
+- [x] `Proof` protocol in ProofKit: `configure() → ProofReference`, `verify() async → ProofResult` *(realized as `ProofConfig` payloads + per-proof session state machines — the package can't see the app's SwiftData `ProofReference`, so it owns the payload half)*
+- [x] Math proof: 3 difficulty levels, generated locally, keyboard UX usable half-asleep (large targets)
+- [x] Steps proof: CoreMotion pedometer, walk N steps (configurable 10–100), live count on screen *(pedometer needs a physical device; Debug builds have a step-injection button for the simulator)*
+- [x] Barcode/QR proof: register any code via camera; dismissal scan must match registered payload; fully offline
+- [x] Proof selection + configuration flow in alarm settings *(in the home alarm card; barcode labelled Pro — paywall enforcement is Milestone 5)*
+- [x] Unit tests: proof state machines; barcode payload matching edge cases *(incl. UPC-A ↔ EAN-13 leading-zero equivalence)*
 
 **Exit criteria:** an alarm configured with each proof type can only be dismissed by completing it.
 

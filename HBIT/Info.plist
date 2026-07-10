@@ -33,6 +33,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>HBIT uses the camera to register a barcode and to scan it each morning to dismiss your alarm. Images never leave your device.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>HBIT counts your steps to verify you're up and moving when dismissing your alarm.</string>
 	<key>POSTHOG_API_KEY</key>
 	<string>$(POSTHOG_API_KEY)</string>
 	<key>POSTHOG_HOST</key>
