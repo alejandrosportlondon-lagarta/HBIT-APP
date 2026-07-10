@@ -33,7 +33,7 @@ public extension ProofConfig {
 
 /// Deterministic seedable RNG (SplitMix64) so proof generation is
 /// reproducible in tests and never a source of flakiness.
-public struct SplitMix64: RandomNumberGenerator, Sendable {
+public struct SplitMix64: RandomNumberGenerator, Equatable, Sendable {
     private var state: UInt64
 
     public init(seed: UInt64) {
