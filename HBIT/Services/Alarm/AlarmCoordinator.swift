@@ -2,7 +2,26 @@ import AlarmEngine
 import Foundation
 import MorningKit
 import Observation
+import ProofKit
 import SwiftData
+
+/// The proof resolved for the active alarm occurrence.
+enum ActiveProof {
+    case math(MathProofConfig)
+    case steps(StepsProofConfig)
+    case barcode(BarcodeProofConfig)
+    /// Test alarms / nothing configured.
+    case placeholder
+
+    var kindLabel: String {
+        switch self {
+        case .math: "math"
+        case .steps: "steps"
+        case .barcode: "barcode"
+        case .placeholder: "placeholder"
+        }
+    }
+}
 
 /// Orchestrates the alarm lifecycle: schedules the notification chain,
 /// drives the state machine from notification/launch events, owns the
@@ -146,7 +165,7 @@ final class AlarmCoordinator {
     func beginProof() {
         if machine.handle(.beginProof) != nil {
             persistState()
-            Telemetry.track(.proofStarted, properties: ["proof_type": "placeholder"])
+            Telemetry.track(.proofStarted, properties: ["proof_type": resolveActiveProof().kindLabel])
         }
     }
 
@@ -154,12 +173,50 @@ final class AlarmCoordinator {
         if machine.handle(.proofFailed) != nil { persistState() }
     }
 
-    /// Placeholder until ProofKit lands in Milestone 2.
+    /// Called by the proof views when their session completes.
     func completeProof() {
+        let kind = resolveActiveProof().kindLabel
         if machine.handle(.proofSucceeded) != nil {
-            Telemetry.track(.proofCompleted, properties: ["proof_type": "placeholder"])
+            Telemetry.track(.proofCompleted, properties: ["proof_type": kind])
             Telemetry.track(.alarmDismissed)
             finish(result: .win, wakeActual: .now)
+        }
+    }
+
+    /// Called by proof views on a failed attempt (wrong answer/wrong code).
+    func reportProofFailure() {
+        Telemetry.track(.proofFailed, properties: ["proof_type": resolveActiveProof().kindLabel])
+    }
+
+    /// Resolves the configured proof for the ringing alarm from the local
+    /// store. Fallback rules keep verification deterministic and the alarm
+    /// always dismissable: a test alarm gets the placeholder; a missing or
+    /// corrupt payload falls back to easy math rather than an unpassable
+    /// (false-negative) proof.
+    func resolveActiveProof() -> ActiveProof {
+        guard let snapshot = activeSnapshot, let modelContext else { return .placeholder }
+        let alarmID = snapshot.alarmID
+        var configDescriptor = FetchDescriptor<AlarmConfig>(predicate: #Predicate { $0.id == alarmID })
+        configDescriptor.fetchLimit = 1
+        guard let config = try? modelContext.fetch(configDescriptor).first else { return .placeholder }
+
+        let fallback = ActiveProof.math(MathProofConfig(difficulty: .easy))
+        guard let referenceID = config.proofReferenceID else {
+            return config.proofType == .steps ? .steps(StepsProofConfig(targetSteps: 20)) : fallback
+        }
+        var referenceDescriptor = FetchDescriptor<ProofReference>(predicate: #Predicate { $0.id == referenceID })
+        referenceDescriptor.fetchLimit = 1
+        guard let reference = try? modelContext.fetch(referenceDescriptor).first else { return fallback }
+
+        switch reference.kind {
+        case .math:
+            return (try? MathProofConfig.from(payload: reference.payload)).map(ActiveProof.math) ?? fallback
+        case .steps:
+            return (try? StepsProofConfig.from(payload: reference.payload)).map(ActiveProof.steps) ?? fallback
+        case .barcode:
+            return (try? BarcodeProofConfig.from(payload: reference.payload)).map(ActiveProof.barcode) ?? fallback
+        case .photoMatch:
+            return fallback // Milestone 3
         }
     }
 

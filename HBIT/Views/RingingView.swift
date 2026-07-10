@@ -62,22 +62,7 @@ struct RingingView: View {
 
     private var proofPlaceholder: some View {
         VStack(spacing: DesignSystem.Spacing.lg) {
-            Text("Proof")
-                .font(DesignSystem.Typography.title)
-                .foregroundStyle(DesignSystem.Colors.textPrimary)
-            Text("Real proofs (math, steps, barcode, photo) arrive in Milestone 2. For now, confirm you're up.")
-                .font(DesignSystem.Typography.body)
-                .foregroundStyle(DesignSystem.Colors.textSecondary)
-                .multilineTextAlignment(.center)
-            Button {
-                coordinator.completeProof()
-            } label: {
-                Text("I'm awake — dismiss alarm")
-                    .font(DesignSystem.Typography.headline)
-                    .frame(maxWidth: .infinity, minHeight: 64)
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(DesignSystem.Colors.success)
+            ProofContainerView()
             Button("Back to alarm") {
                 coordinator.abandonProof()
             }
