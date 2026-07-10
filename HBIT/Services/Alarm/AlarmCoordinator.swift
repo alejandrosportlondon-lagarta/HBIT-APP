@@ -80,9 +80,25 @@ final class AlarmCoordinator {
         await schedule(fireDate: fireDate, alarmID: config.id, proofType: config.proofType.rawValue)
     }
 
-    /// Reliability-harness entry point: ring N seconds from now.
+    /// Reliability-harness entry point: ring N seconds from now. Adopts the
+    /// saved alarm's identity so its configured proof applies — a random ID
+    /// would resolve to the placeholder proof, making proofs untestable
+    /// from the harness. Falls back to a placeholder-proof test alarm only
+    /// when no alarm is configured yet.
     func scheduleTestAlarm(inSeconds seconds: TimeInterval, now: Date = .now) async {
-        await schedule(fireDate: now.addingTimeInterval(seconds), alarmID: UUID(), proofType: "test")
+        let config = firstEnabledConfig()
+        await schedule(
+            fireDate: now.addingTimeInterval(seconds),
+            alarmID: config?.id ?? UUID(),
+            proofType: config?.proofType.rawValue ?? "test"
+        )
+    }
+
+    private func firstEnabledConfig() -> AlarmConfig? {
+        guard let modelContext else { return nil }
+        var descriptor = FetchDescriptor<AlarmConfig>(predicate: #Predicate { $0.isEnabled })
+        descriptor.fetchLimit = 1
+        return try? modelContext.fetch(descriptor).first
     }
 
     private func schedule(fireDate: Date, alarmID: UUID, proofType: String) async {

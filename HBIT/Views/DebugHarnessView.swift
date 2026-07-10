@@ -29,7 +29,7 @@ struct DebugHarnessView: View {
 
     var body: some View {
         List {
-            Section("Test alarms") {
+            Section {
                 Button("Ring in 10 seconds") {
                     Task { await coordinator.scheduleTestAlarm(inSeconds: 10) }
                 }
@@ -44,6 +44,10 @@ struct DebugHarnessView: View {
                     LabeledContent("Active fire date", value: next.formatted(date: .omitted, time: .standard))
                 }
                 LabeledContent("Machine state", value: coordinator.machine.state.rawValue)
+            } header: {
+                Text("Test alarms")
+            } footer: {
+                Text("Test alarms use the proof configured on your saved alarm.")
             }
 
             Section("Photo proof threshold (final value set in beta)") {
