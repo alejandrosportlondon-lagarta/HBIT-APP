@@ -6,7 +6,10 @@ import SwiftUI
 /// ringing screen and the proof screen (product guardrail).
 struct RingingView: View {
     @Environment(AlarmCoordinator.self) private var coordinator
+    @Environment(EmergencyExitCounter.self) private var exitCounter
+    @Environment(AuthService.self) private var auth
     @State private var confirmingEmergencyExit = false
+    @State private var showingChallenge = false
 
     var body: some View {
         VStack(spacing: DesignSystem.Spacing.xl) {
@@ -29,13 +32,30 @@ struct RingingView: View {
             isPresented: $confirmingEmergencyExit,
             titleVisibility: .visible
         ) {
-            Button("Exit — record a LOSS", role: .destructive) {
-                coordinator.performEmergencyExit()
+            Button("Start the \(exitCounter.currentTapCost())-tap challenge", role: .destructive) {
+                showingChallenge = true
             }
             Button("Keep trying", role: .cancel) {}
         } message: {
-            Text("This morning will be recorded as a LOSS. From Milestone 3 each use also gets more expensive.")
+            Text(
+                "The exit costs \(exitCounter.currentTapCost()) taps on a moving target, records this "
+                    + "morning as a LOSS, and gets 100 taps more expensive each use (resets after 30 days)."
+            )
         }
+        .sheet(isPresented: $showingChallenge) {
+            EmergencyExitChallengeView(requiredTaps: exitCounter.currentTapCost()) {
+                completeEmergencyExit()
+            }
+        }
+    }
+
+    private func completeEmergencyExit() {
+        let cost = exitCounter.currentTapCost()
+        exitCounter.recordUse()
+        let uses = exitCounter.uses
+        let lastUsedAt = exitCounter.lastUsedAt
+        Task { await auth.pushEmergencyExitProfile(uses: uses, lastUsedAt: lastUsedAt) }
+        coordinator.performEmergencyExit(tapCost: cost, effectiveUses: exitCounter.effectiveUses())
     }
 
     private var ringing: some View {

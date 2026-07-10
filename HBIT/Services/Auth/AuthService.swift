@@ -17,6 +17,8 @@ final class AuthService {
 
     private(set) var state: State
     private let client: SupabaseClient?
+    /// Same-file extensions (profile sync) reach the client through this.
+    var supabaseClient: SupabaseClient? { client }
 
     init(config: AppConfig) {
         if let url = config.supabaseURL, let key = config.supabaseAnonKey {
@@ -80,6 +82,52 @@ final class AuthService {
     private func didSignIn(session: Session) {
         state = .signedIn(userID: session.user.id)
         Telemetry.identify(userID: session.user.id.uuidString)
+    }
+}
+
+// MARK: - Profile sync (emergency-exit escalation counter)
+
+/// The server-side emergency-exit state on `profiles` (survives
+/// reinstalls). Best-effort: every call is safe to fail offline.
+struct EmergencyExitProfileState: Codable, Sendable {
+    let uses: Int
+    let lastUsedAt: Date?
+
+    enum CodingKeys: String, CodingKey {
+        case uses = "emergency_exit_uses"
+        case lastUsedAt = "emergency_exit_last_used_at"
+    }
+}
+
+extension AuthService {
+    private var signedInUserID: UUID? {
+        if case .signedIn(let userID) = state { return userID }
+        return nil
+    }
+
+    /// Nonisolated so the non-Sendable Postgrest response never crosses an
+    /// actor boundary — only the Sendable result does.
+    nonisolated func fetchEmergencyExitProfile() async -> EmergencyExitProfileState? {
+        let context = await MainActor.run { (client: supabaseClient, userID: signedInUserID) }
+        guard let client = context.client, let userID = context.userID else { return nil }
+        return try? await client
+            .from("profiles")
+            .select("emergency_exit_uses, emergency_exit_last_used_at")
+            .eq("id", value: userID)
+            .single()
+            .execute()
+            .value
+    }
+
+    nonisolated func pushEmergencyExitProfile(uses: Int, lastUsedAt: Date?) async {
+        let context = await MainActor.run { (client: supabaseClient, userID: signedInUserID) }
+        guard let client = context.client, let userID = context.userID else { return }
+        let update = EmergencyExitProfileState(uses: uses, lastUsedAt: lastUsedAt)
+        _ = try? await client
+            .from("profiles")
+            .update(update)
+            .eq("id", value: userID)
+            .execute()
     }
 }
 

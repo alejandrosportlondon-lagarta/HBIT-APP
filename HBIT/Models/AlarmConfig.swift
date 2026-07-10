@@ -17,6 +17,8 @@ final class AlarmConfig {
     var proofReferenceID: UUID?
     var isEnabled: Bool
     var soundName: String
+    /// Wake-Up Check delay after dismissal, 3–10 minutes; nil = disabled.
+    var wakeUpCheckMinutes: Int?
     var createdAt: Date
     var updatedAt: Date
 
@@ -34,6 +36,7 @@ final class AlarmConfig {
         proofReferenceID: UUID? = nil,
         isEnabled: Bool = true,
         soundName: String = "default",
+        wakeUpCheckMinutes: Int? = nil,
         now: Date = .now
     ) {
         self.id = id
@@ -44,6 +47,7 @@ final class AlarmConfig {
         self.proofReferenceID = proofReferenceID
         self.isEnabled = isEnabled
         self.soundName = soundName
+        self.wakeUpCheckMinutes = wakeUpCheckMinutes
         self.createdAt = now
         self.updatedAt = now
     }

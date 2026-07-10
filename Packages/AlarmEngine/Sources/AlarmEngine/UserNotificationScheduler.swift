@@ -7,6 +7,7 @@ import UserNotifications
 /// `AlarmOccurrenceCalculator`.
 public final class UserNotificationScheduler: NotificationScheduling {
     public static let alarmCategoryIdentifier = "HBIT_ALARM"
+    public static let wakeUpCheckCategoryIdentifier = "HBIT_WAKE_CHECK"
 
     // UNUserNotificationCenter is documented thread-safe.
     private nonisolated(unsafe) let center = UNUserNotificationCenter.current()
@@ -19,7 +20,7 @@ public final class UserNotificationScheduler: NotificationScheduling {
         try await center.requestAuthorization(options: [.alert, .sound, .badge])
     }
 
-    public func schedule(_ plan: NotificationChainPlan, title: String, body: String) async throws {
+    public func schedule(_ plan: NotificationChainPlan, title: String, body: String, category: String) async throws {
         var utcCalendar = Calendar(identifier: .gregorian)
         utcCalendar.timeZone = TimeZone(identifier: "UTC")!
 
@@ -28,7 +29,7 @@ public final class UserNotificationScheduler: NotificationScheduling {
             content.title = title
             content.body = body
             content.sound = .default
-            content.categoryIdentifier = Self.alarmCategoryIdentifier
+            content.categoryIdentifier = category
             content.threadIdentifier = plan.baseIdentifier
             content.userInfo = ["hbit_alarm_base": plan.baseIdentifier]
             // Demoted silently by iOS until the Time Sensitive capability

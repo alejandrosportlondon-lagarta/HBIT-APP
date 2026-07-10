@@ -9,7 +9,9 @@ struct ProofSettingsSection: View {
     @Binding var mathDifficulty: MathDifficulty
     @Binding var stepsTarget: Int
     let barcodeSummary: String?
+    let photoSummary: String?
     let onRegisterBarcode: () -> Void
+    let onRegisterPhoto: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
@@ -17,6 +19,7 @@ struct ProofSettingsSection: View {
                 Text("Math").tag(ProofType.math)
                 Text("Steps").tag(ProofType.steps)
                 Text("Barcode ⭐").tag(ProofType.barcode)
+                Text("Photo ⭐").tag(ProofType.photoMatch)
             }
             .pickerStyle(.segmented)
 
@@ -35,24 +38,38 @@ struct ProofSettingsSection: View {
                         .foregroundStyle(DesignSystem.Colors.textPrimary)
                 }
             case .barcode:
-                HStack {
-                    Text(barcodeSummary ?? "No code registered yet")
-                        .font(DesignSystem.Typography.caption)
-                        .foregroundStyle(
-                            barcodeSummary == nil
-                                ? DesignSystem.Colors.accent
-                                : DesignSystem.Colors.textSecondary
-                        )
-                    Spacer()
-                    Button("Register…", action: onRegisterBarcode)
-                        .buttonStyle(.bordered)
-                        .tint(DesignSystem.Colors.primary)
-                }
+                registrationRow(
+                    summary: barcodeSummary,
+                    emptyText: "No code registered yet",
+                    action: onRegisterBarcode
+                )
             case .photoMatch:
-                Text("Photo proof arrives in Milestone 3.")
-                    .font(DesignSystem.Typography.caption)
-                    .foregroundStyle(DesignSystem.Colors.textSecondary)
+                registrationRow(
+                    summary: photoSummary,
+                    emptyText: "No reference photo yet",
+                    action: onRegisterPhoto
+                )
             }
+        }
+    }
+
+    private func registrationRow(
+        summary: String?,
+        emptyText: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        HStack {
+            Text(summary ?? emptyText)
+                .font(DesignSystem.Typography.caption)
+                .foregroundStyle(
+                    summary == nil
+                        ? DesignSystem.Colors.accent
+                        : DesignSystem.Colors.textSecondary
+                )
+            Spacer()
+            Button("Register…", action: action)
+                .buttonStyle(.bordered)
+                .tint(DesignSystem.Colors.primary)
         }
     }
 }
