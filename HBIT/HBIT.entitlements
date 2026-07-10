@@ -2,9 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>com.apple.developer.applesignin</key>
-	<array>
-		<string>Default</string>
-	</array>
+	<!-- Sign in with Apple (com.apple.developer.applesignin = [Default])
+	     is intentionally absent: free personal Apple teams cannot sign
+	     apps that declare it, which blocks on-device testing during the
+	     Milestone 1 dogfood. Restore it once the paid Apple Developer
+	     Program membership is active — auth is dormant until Supabase
+	     keys exist, so nothing is lost meanwhile. Same applies to the
+	     future critical-alerts and time-sensitive entitlements. -->
 </dict>
 </plist>
