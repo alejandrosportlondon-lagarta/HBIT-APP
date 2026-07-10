@@ -46,26 +46,30 @@ struct MathProofTests {
         var session = MathProofSession(config: MathProofConfig(difficulty: .easy, problemCount: 3), seed: 1)
         #expect(!session.isComplete)
         for solved in 1...3 {
-            let correct = session.currentProblem.answer
-            #expect(session.submit(correct))
+            let accepted = session.submit(session.currentProblem.answer)
+            #expect(accepted)
             #expect(session.solvedCount == solved)
         }
         #expect(session.isComplete)
         // Complete sessions reject further submissions.
-        #expect(!session.submit(0))
+        let acceptedAfterComplete = session.submit(0)
+        #expect(!acceptedAfterComplete)
     }
 
     @Test("a wrong answer neither advances nor resets progress")
     func wrongAnswerKeepsProgress() {
         var session = MathProofSession(config: MathProofConfig(difficulty: .medium, problemCount: 2), seed: 5)
-        #expect(session.submit(session.currentProblem.answer))
+        let firstAccepted = session.submit(session.currentProblem.answer)
+        #expect(firstAccepted)
         let problemBefore = session.currentProblem
-        #expect(!session.submit(session.currentProblem.answer + 1))
+        let wrongAccepted = session.submit(session.currentProblem.answer + 1)
+        #expect(!wrongAccepted)
         #expect(session.solvedCount == 1)
         #expect(session.currentProblem == problemBefore)
         #expect(session.failedAttempts == 1)
         // Still solvable after a failure.
-        #expect(session.submit(session.currentProblem.answer))
+        let retryAccepted = session.submit(session.currentProblem.answer)
+        #expect(retryAccepted)
         #expect(session.isComplete)
     }
 
