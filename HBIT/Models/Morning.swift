@@ -26,6 +26,10 @@ final class Morning {
     var missionsSnapshot: Data
     /// Anti-cheat: a manual clock rollback was detected around this morning.
     var clockTampered: Bool = false
+    /// User-set deadline: when this morning closes and the score locks.
+    var closeAt: Date?
+    /// Set once the deadline passed and the final score was computed.
+    var scoreLockedAt: Date?
     private var syncStatusRaw: String
     var createdAt: Date
     var updatedAt: Date

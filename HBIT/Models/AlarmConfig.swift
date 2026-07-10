@@ -19,8 +19,14 @@ final class AlarmConfig {
     var soundName: String
     /// Wake-Up Check delay after dismissal, 3–10 minutes; nil = disabled.
     var wakeUpCheckMinutes: Int?
+    /// The morning closes (score locks) this many hours after the wake
+    /// target; nil = default (3).
+    var morningCloseHoursAfterWake: Int?
     var createdAt: Date
     var updatedAt: Date
+
+    static let defaultMorningCloseHours = 3
+    var effectiveMorningCloseHours: Int { morningCloseHoursAfterWake ?? Self.defaultMorningCloseHours }
 
     var proofType: ProofType {
         get { ProofType(rawValue: proofTypeRaw) ?? .math }
