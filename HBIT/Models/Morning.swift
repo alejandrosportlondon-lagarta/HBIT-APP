@@ -24,6 +24,8 @@ final class Morning {
     /// JSON snapshot of the mission list as it was locked for this morning
     /// (mirrors the `missions jsonb` column).
     var missionsSnapshot: Data
+    /// Anti-cheat: a manual clock rollback was detected around this morning.
+    var clockTampered: Bool = false
     private var syncStatusRaw: String
     var createdAt: Date
     var updatedAt: Date

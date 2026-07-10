@@ -1,4 +1,5 @@
 #if DEBUG
+import ProofKit
 import SwiftUI
 
 /// Reliability harness (Debug builds only): fire test alarms on demand and
@@ -23,6 +24,8 @@ struct DebugHarnessView: View {
 
     @Environment(AlarmCoordinator.self) private var coordinator
     @State private var pendingCount = 0
+    @State private var thresholdOverrideEnabled = PhotoProofService.thresholdOverride != nil
+    @State private var thresholdValue = PhotoProofService.thresholdOverride ?? PhotoMatchRule.defaultThreshold
 
     var body: some View {
         List {
@@ -41,6 +44,23 @@ struct DebugHarnessView: View {
                     LabeledContent("Active fire date", value: next.formatted(date: .omitted, time: .standard))
                 }
                 LabeledContent("Machine state", value: coordinator.machine.state.rawValue)
+            }
+
+            Section("Photo proof threshold (final value set in beta)") {
+                Toggle("Override registered threshold", isOn: $thresholdOverrideEnabled)
+                    .onChange(of: thresholdOverrideEnabled) { _, enabled in
+                        PhotoProofService.setThresholdOverride(enabled ? thresholdValue : nil)
+                    }
+                if thresholdOverrideEnabled {
+                    HStack {
+                        Slider(value: $thresholdValue, in: PhotoMatchRule.thresholdRange)
+                            .onChange(of: thresholdValue) { _, value in
+                                PhotoProofService.setThresholdOverride(value)
+                            }
+                        Text(String(format: "%.2f", thresholdValue))
+                            .monospacedDigit()
+                    }
+                }
             }
 
             Section("Scenario matrix (see docs/testing/alarm-reliability-test-plan.md)") {

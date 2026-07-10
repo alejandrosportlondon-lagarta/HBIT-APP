@@ -10,6 +10,7 @@ enum ActiveProof {
     case math(MathProofConfig)
     case steps(StepsProofConfig)
     case barcode(BarcodeProofConfig)
+    case photo(PhotoProofConfig)
     /// Test alarms / nothing configured.
     case placeholder
 
@@ -18,6 +19,7 @@ enum ActiveProof {
         case .math: "math"
         case .steps: "steps"
         case .barcode: "barcode"
+        case .photo: "photoMatch"
         case .placeholder: "placeholder"
         }
     }
@@ -33,8 +35,10 @@ final class AlarmCoordinator {
     private let scheduler: any NotificationScheduling
     private let store: AlarmRuntimeStore
     private let audio = AlarmAudioPlayer()
+    private let clockMonitor = ClockIntegrityMonitor()
     private var modelContext: ModelContext?
     private var expiryWatchdog: Task<Void, Never>?
+    private(set) var wakeUpCheck: WakeUpCheckController?
 
     private(set) var machine = AlarmStateMachine()
     private(set) var activeSnapshot: AlarmRuntimeSnapshot?
@@ -51,6 +55,11 @@ final class AlarmCoordinator {
 
     func configure(modelContext: ModelContext) {
         self.modelContext = modelContext
+        if wakeUpCheck == nil {
+            wakeUpCheck = WakeUpCheckController(scheduler: scheduler, store: store) { [weak self] in
+                await self?.rescheduleFromConfig()
+            }
+        }
     }
 
     var nextFireDate: Date? {
@@ -90,7 +99,8 @@ final class AlarmCoordinator {
             try await scheduler.schedule(
                 plan,
                 title: "Wake up — HBIT",
-                body: "Your alarm is ringing. Open HBIT and complete your proof to dismiss it."
+                body: "Your alarm is ringing. Open HBIT and complete your proof to dismiss it.",
+                category: UserNotificationScheduler.alarmCategoryIdentifier
             )
             let snapshot = AlarmRuntimeSnapshot(
                 alarmID: alarmID, baseIdentifier: base, fireDate: fireDate,
@@ -111,6 +121,7 @@ final class AlarmCoordinator {
         if let snapshot = activeSnapshot ?? store.snapshot {
             await scheduler.cancelChain(baseIdentifier: snapshot.baseIdentifier)
         }
+        await wakeUpCheck?.cancelAll()
         store.clear()
         activeSnapshot = nil
         machine = AlarmStateMachine()
@@ -122,6 +133,7 @@ final class AlarmCoordinator {
     /// Called at every launch and foreground: reconciles persisted state
     /// with the ring window (ADR 002).
     func resume(now: Date = .now) {
+        clockMonitor.observe(now: now)
         guard let snapshot = store.snapshot else { return }
         activeSnapshot = snapshot
         machine = AlarmStateMachine(state: snapshot.state)
@@ -151,6 +163,16 @@ final class AlarmCoordinator {
     /// A chain notification fired while the app was frontmost, or the user
     /// tapped one.
     func alarmDidFire() {
+        clockMonitor.observe()
+        // A Wake-Up Check refire arrives after the previous occurrence
+        // finished; reload it from the store.
+        if activeSnapshot == nil, let stored = store.snapshot {
+            activeSnapshot = stored
+            machine = AlarmStateMachine(state: stored.state)
+        }
+        if let base = activeSnapshot?.baseIdentifier {
+            wakeUpCheck?.markMissedIfNeeded(firedBaseIdentifier: base)
+        }
         if machine.handle(.fire) != nil {
             persistState()
             Telemetry.track(.alarmRang)
@@ -216,15 +238,17 @@ final class AlarmCoordinator {
         case .barcode:
             return (try? BarcodeProofConfig.from(payload: reference.payload)).map(ActiveProof.barcode) ?? fallback
         case .photoMatch:
-            return fallback // Milestone 3
+            return (try? PhotoProofConfig.from(payload: reference.payload)).map(ActiveProof.photo) ?? fallback
         }
     }
 
-    /// Milestone 1 version: always available, records a LOSS. The escalating
-    /// tap challenge arrives in Milestone 3.
-    func performEmergencyExit() {
+    /// Called after the tap challenge completes. Records a LOSS morning.
+    func performEmergencyExit(tapCost: Int, effectiveUses: Int) {
         if machine.handle(.emergencyExit) != nil {
-            Telemetry.track(.emergencyExitUsed, properties: ["tap_cost": "0"])
+            Telemetry.track(.emergencyExitUsed, properties: [
+                "tap_cost": String(tapCost),
+                "use_count_30d": String(effectiveUses)
+            ])
             finish(result: .loss, wakeActual: .now)
         }
     }
@@ -268,7 +292,25 @@ final class AlarmCoordinator {
         if let snapshot {
             Task { await scheduler.cancelChain(baseIdentifier: snapshot.baseIdentifier) }
         }
-        Task { await rescheduleFromConfig() }
+        // A WIN with a Wake-Up Check configured arms the check instead of
+        // scheduling tomorrow immediately (that happens when the check
+        // resolves). Refire occurrences never arm another check.
+        if result == .win,
+           let snapshot,
+           !snapshot.isRefire,
+           let minutes = wakeUpCheckMinutes(forAlarmID: snapshot.alarmID),
+           let wakeUpCheck {
+            Task { await wakeUpCheck.schedule(minutes: minutes, alarmID: snapshot.alarmID) }
+        } else {
+            Task { await rescheduleFromConfig() }
+        }
+    }
+
+    private func wakeUpCheckMinutes(forAlarmID alarmID: UUID) -> Int? {
+        guard let modelContext else { return nil }
+        var descriptor = FetchDescriptor<AlarmConfig>(predicate: #Predicate { $0.id == alarmID })
+        descriptor.fetchLimit = 1
+        return (try? modelContext.fetch(descriptor).first)?.wakeUpCheckMinutes
     }
 
     private func persistState() {
@@ -287,21 +329,28 @@ final class AlarmCoordinator {
         formatter.timeZone = .current
         let dateKey = formatter.string(from: snapshot.fireDate)
 
+        let tampered = clockMonitor.consumeTamperFlag()
         let descriptor = FetchDescriptor<Morning>(predicate: #Predicate { $0.dateKey == dateKey })
         if let existing = try? modelContext.fetch(descriptor).first {
             existing.result = result
             existing.wakeActual = wakeActual
             existing.updatedAt = .now
             existing.syncStatus = .pending
+            existing.clockTampered = existing.clockTampered || tampered
         } else {
-            modelContext.insert(Morning(
+            let morning = Morning(
                 dateKey: dateKey,
                 wakeTarget: snapshot.fireDate,
                 wakeActual: wakeActual,
                 result: result
-            ))
+            )
+            morning.clockTampered = tampered
+            modelContext.insert(morning)
         }
-        Telemetry.track(.morningClosed, properties: ["result": result.rawValue])
+        Telemetry.track(.morningClosed, properties: [
+            "result": result.rawValue,
+            "clock_tampered": String(tampered)
+        ])
     }
 
     private func rescheduleFromConfig() async {

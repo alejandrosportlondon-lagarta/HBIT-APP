@@ -42,10 +42,10 @@ PRD reference: `docs/PRD.md`. Conventions: `CLAUDE.md`.
 
 ## Milestone 3 — Proof system, part 2 + enforcement layer (week 7–8)
 
-- [ ] Photo-match proof: register reference photo; dismissal shows ghost overlay of reference; on-device similarity via Vision feature-print distance; tunable threshold behind a debug slider (final value set in beta)
-- [ ] Wake-Up Check: configurable 3–10 min post-dismissal local notification; missing it re-fires the alarm once
-- [ ] Emergency exit: moving-target tap challenge, 100 taps base, +100 per use per user, 30-day reset; records morning as LOSS; reachable from every proof screen
-- [ ] Anti-cheat pass: proof screens block screenshots of reference image; time changes (manual clock rollback) detected and flagged on the morning record
+- [x] Photo-match proof: register reference photo; dismissal shows ghost overlay of reference; on-device similarity via Vision feature-print distance; tunable threshold behind a debug slider (final value set in beta) *(threshold slider in the Reliability Harness; needs devices + testers to tune)*
+- [x] Wake-Up Check: configurable 3–10 min post-dismissal local notification; missing it re-fires the alarm once *(acknowledge via notification tap, "I'm up" action, or the home-screen card)*
+- [x] Emergency exit: moving-target tap challenge, 100 taps base, +100 per use per user, 30-day reset; records morning as LOSS; reachable from every proof screen *(server-side counter on `profiles` reconciled when signed in; **reinstall persistence unverifiable until the Supabase project exists**)*
+- [x] Anti-cheat pass: proof screens block screenshots of reference image; time changes (manual clock rollback) detected and flagged on the morning record *(secure-canvas rendering + screenshot telemetry; rollback detector latches onto `Morning.clockTampered`)*
 
 **Exit criteria:** photo proof false-negative rate < 5% across 3 testers' homes at default threshold; emergency exit escalation persists across reinstall (server-side counter).
 

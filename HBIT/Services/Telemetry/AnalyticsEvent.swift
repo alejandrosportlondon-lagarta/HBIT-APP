@@ -19,6 +19,7 @@ enum AnalyticsEvent: String {
     case emergencyExitUsed = "emergency_exit_used"
     case wakeUpCheckPassed = "wake_up_check_passed"
     case wakeUpCheckMissed = "wake_up_check_missed"
+    case screenshotOnProof = "screenshot_on_proof"
     case missionCompleted = "mission_completed"
     case morningClosed = "morning_closed"
 

@@ -17,6 +17,8 @@ final class AuthService {
 
     private(set) var state: State
     private let client: SupabaseClient?
+    /// Same-file extensions (profile sync) reach the client through this.
+    var supabaseClient: SupabaseClient? { client }
 
     init(config: AppConfig) {
         if let url = config.supabaseURL, let key = config.supabaseAnonKey {
@@ -80,6 +82,43 @@ final class AuthService {
     private func didSignIn(session: Session) {
         state = .signedIn(userID: session.user.id)
         Telemetry.identify(userID: session.user.id.uuidString)
+    }
+}
+
+// MARK: - Profile sync (emergency-exit escalation counter)
+
+/// The server-side emergency-exit state on `profiles` (survives
+/// reinstalls). Best-effort: every call is safe to fail offline.
+struct EmergencyExitProfileState: Codable {
+    let uses: Int
+    let lastUsedAt: Date?
+
+    enum CodingKeys: String, CodingKey {
+        case uses = "emergency_exit_uses"
+        case lastUsedAt = "emergency_exit_last_used_at"
+    }
+}
+
+extension AuthService {
+    func fetchEmergencyExitProfile() async -> EmergencyExitProfileState? {
+        guard let client = supabaseClient, case .signedIn(let userID) = state else { return nil }
+        return try? await client
+            .from("profiles")
+            .select("emergency_exit_uses, emergency_exit_last_used_at")
+            .eq("id", value: userID)
+            .single()
+            .execute()
+            .value
+    }
+
+    func pushEmergencyExitProfile(uses: Int, lastUsedAt: Date?) async {
+        guard let client = supabaseClient, case .signedIn(let userID) = state else { return }
+        let update = EmergencyExitProfileState(uses: uses, lastUsedAt: lastUsedAt)
+        _ = try? await client
+            .from("profiles")
+            .update(update)
+            .eq("id", value: userID)
+            .execute()
     }
 }
 

@@ -16,6 +16,8 @@ struct ProofContainerView: View {
                 StepsProofView(config: config) { coordinator.completeProof() }
             case .barcode(let config):
                 BarcodeProofView(config: config) { coordinator.completeProof() }
+            case .photo(let config):
+                PhotoProofView(config: config) { coordinator.completeProof() }
             case .placeholder, nil:
                 placeholder
             }

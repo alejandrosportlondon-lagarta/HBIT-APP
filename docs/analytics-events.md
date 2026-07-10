@@ -40,7 +40,13 @@ Target: install → verified wake next morning. NO paywall in this flow.
 | `wake_up_check_passed` | Wake-Up Check acknowledged in time | — |
 | `wake_up_check_missed` | Wake-Up Check missed, alarm re-fired | — |
 | `mission_completed` | A mission checked off (or proof-verified) | `template`, `has_proof` |
-| `morning_closed` | Morning deadline reached, score locked | `result`, `score`, `streak` |
+| `morning_closed` | Morning deadline reached, score locked | `result`, `score`, `streak`, `clock_tampered` |
+
+## Anti-cheat signals
+
+| Event | Fired when | Properties |
+| --- | --- | --- |
+| `screenshot_on_proof` | The user screenshots a proof screen (the reference image is blanked by the secure canvas; this records the attempt) | `proof_type` |
 
 ## Monetization
 

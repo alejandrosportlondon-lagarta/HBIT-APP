@@ -19,7 +19,10 @@ struct HomeView: View {
     @State private var mathDifficulty: MathDifficulty = .easy
     @State private var stepsTarget = 20
     @State private var registeredBarcode: (id: UUID, summary: String)?
+    @State private var registeredPhoto: (id: UUID, summary: String)?
     @State private var showingBarcodeRegistration = false
+    @State private var showingPhotoRegistration = false
+    @State private var wakeUpCheckMinutes = 0
     @State private var saveWarning: String?
 
     var body: some View {
@@ -28,6 +31,10 @@ struct HomeView: View {
                 Text("The Verified Morning")
                     .font(DesignSystem.Typography.title)
                     .foregroundStyle(DesignSystem.Colors.textPrimary)
+
+                if coordinator.wakeUpCheck?.pending != nil {
+                    wakeUpCheckCard
+                }
 
                 alarmCard
 
@@ -68,15 +75,29 @@ struct HomeView: View {
                 proofType: $proofType,
                 mathDifficulty: $mathDifficulty,
                 stepsTarget: $stepsTarget,
-                barcodeSummary: registeredBarcode?.summary
-            ) {
-                showingBarcodeRegistration = true
-            }
+                barcodeSummary: registeredBarcode?.summary,
+                photoSummary: registeredPhoto?.summary,
+                onRegisterBarcode: { showingBarcodeRegistration = true },
+                onRegisterPhoto: { showingPhotoRegistration = true }
+            )
             .sheet(isPresented: $showingBarcodeRegistration) {
                 BarcodeRegistrationView { payload, symbology in
                     registerBarcode(payload: payload, symbology: symbology)
                 }
             }
+            .sheet(isPresented: $showingPhotoRegistration) {
+                PhotoRegistrationView { photoConfig in
+                    registerPhoto(photoConfig)
+                }
+            }
+
+            Picker("Wake-Up Check", selection: $wakeUpCheckMinutes) {
+                Text("Check: off").tag(0)
+                ForEach([3, 5, 10], id: \.self) { minutes in
+                    Text("Check: \(minutes) min").tag(minutes)
+                }
+            }
+            .pickerStyle(.segmented)
 
             if let saveWarning {
                 Text(saveWarning)
@@ -99,6 +120,29 @@ struct HomeView: View {
                     .font(DesignSystem.Typography.caption)
                     .foregroundStyle(DesignSystem.Colors.textSecondary)
             }
+        }
+        .padding(DesignSystem.Spacing.lg)
+        .background(DesignSystem.Colors.surface, in: RoundedRectangle(cornerRadius: DesignSystem.Radius.card))
+    }
+
+    private var wakeUpCheckCard: some View {
+        VStack(spacing: DesignSystem.Spacing.sm) {
+            Text("Wake-Up Check pending")
+                .font(DesignSystem.Typography.headline)
+                .foregroundStyle(DesignSystem.Colors.textPrimary)
+            Text("Confirm you're still up or the alarm re-fires.")
+                .font(DesignSystem.Typography.caption)
+                .foregroundStyle(DesignSystem.Colors.textSecondary)
+            Button {
+                let controller = coordinator.wakeUpCheck
+                Task { await controller?.acknowledge() }
+            } label: {
+                Text("I'm up ✓")
+                    .font(DesignSystem.Typography.headline)
+                    .frame(maxWidth: .infinity, minHeight: 52)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(DesignSystem.Colors.success)
         }
         .padding(DesignSystem.Spacing.lg)
         .background(DesignSystem.Colors.surface, in: RoundedRectangle(cornerRadius: DesignSystem.Radius.card))
@@ -129,6 +173,7 @@ struct HomeView: View {
         selectedTime = Calendar.current.date(
             bySettingHour: config.hour, minute: config.minute, second: 0, of: .now
         ) ?? selectedTime
+        wakeUpCheckMinutes = config.wakeUpCheckMinutes ?? 0
         loadProofSettings(from: config)
     }
 
@@ -149,7 +194,9 @@ struct HomeView: View {
                 registeredBarcode = (reference.id, Self.summary(forBarcode: decoded.payload))
             }
         case .photoMatch:
-            break
+            if (try? PhotoProofConfig.from(payload: reference.payload)) != nil {
+                registeredPhoto = (reference.id, "Reference photo registered")
+            }
         }
     }
 
@@ -157,6 +204,10 @@ struct HomeView: View {
         saveWarning = nil
         if proofType == .barcode && registeredBarcode == nil {
             saveWarning = "Register a barcode first — it's what you'll scan to dismiss the alarm."
+            return
+        }
+        if proofType == .photoMatch && registeredPhoto == nil {
+            saveWarning = "Register a reference photo first — it's what you'll re-take to dismiss the alarm."
             return
         }
         let components = Calendar.current.dateComponents([.hour, .minute], from: selectedTime)
@@ -176,6 +227,7 @@ struct HomeView: View {
             modelContext.insert(config)
         }
         config.proofType = proofType
+        config.wakeUpCheckMinutes = wakeUpCheckMinutes == 0 ? nil : wakeUpCheckMinutes
         attachProofReference(to: config)
         await coordinator.scheduleAlarm(config: config)
     }
@@ -200,8 +252,16 @@ struct HomeView: View {
         case .barcode:
             config.proofReferenceID = registeredBarcode?.id
         case .photoMatch:
-            break
+            config.proofReferenceID = registeredPhoto?.id
         }
+    }
+
+    private func registerPhoto(_ photoConfig: PhotoProofConfig) {
+        guard let data = try? photoConfig.payloadData() else { return }
+        let reference = ProofReference(kind: .photoMatch, payload: data)
+        modelContext.insert(reference)
+        registeredPhoto = (reference.id, "Reference photo registered")
+        saveWarning = nil
     }
 
     private func upsertGeneratedReference(kind: ProofType, payload: Data?, on config: AlarmConfig) {
