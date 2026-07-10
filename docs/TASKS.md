@@ -19,13 +19,13 @@ PRD reference: `docs/PRD.md`. Conventions: `CLAUDE.md`.
 
 ## Milestone 1 — Alarm engine + reliability harness (week 3–4) ← HIGHEST RISK, DO FIRST
 
-- [ ] `AlarmScheduler`: schedules a notification chain (repeating every 30–60s for up to 30 min) for a target time; cancels chain on dismissal
-- [ ] Alarm audio: looping, volume-ramping sound via AVFoundation when app is foreground/launched from notification
-- [ ] Full-screen dismiss UI launched from notification tap; alarm state machine: `scheduled → ringing → proofInProgress → dismissed | emergencyExited | expired`
-- [ ] Restart resilience: if device reboots or app is killed while ringing, next app launch within the ring window resumes ringing state
-- [ ] Reliability test harness: a debug screen + UI test plan covering: app killed, silent switch on, Focus/DND on, Low Power Mode, storage-full notification limits, DST boundary alarms
-- [ ] `docs/decisions/001-alarm-reliability.md` ADR documenting the chosen strategy and its known limits
-- [ ] Critical alerts entitlement request drafted (needs founder's Apple developer account to submit)
+- [x] `AlarmScheduler`: schedules a notification chain (repeating every 30–60s for up to 30 min) for a target time; cancels chain on dismissal *(`NotificationChainPlan` + `UserNotificationScheduler`, unit-tested)*
+- [x] Alarm audio: looping, volume-ramping sound via AVFoundation when app is foreground/launched from notification
+- [x] Full-screen dismiss UI launched from notification tap; alarm state machine: `scheduled → ringing → proofInProgress → dismissed | emergencyExited | expired` *(state machine exhaustively unit-tested; proof step is a placeholder until Milestone 2)*
+- [x] Restart resilience: if device reboots or app is killed while ringing, next app launch within the ring window resumes ringing state *(persisted snapshot + `RingWindow` resume; needs physical-device confirmation in the dogfood)*
+- [x] Reliability test harness: a debug screen + UI test plan covering: app killed, silent switch on, Focus/DND on, Low Power Mode, storage-full notification limits, DST boundary alarms *(harness screen in Debug builds; plan in `docs/testing/alarm-reliability-test-plan.md`; manual runs pending)*
+- [x] `docs/decisions/001-alarm-reliability.md` ADR documenting the chosen strategy and its known limits *(lives at `002-alarm-reliability.md` — 001 was taken)*
+- [x] Critical alerts entitlement request drafted (needs founder's Apple developer account to submit) *(`docs/critical-alerts-entitlement-request.md`)*
 
 **Exit criteria:** 7-day manual dogfood with zero missed alarms across ≥ 2 physical devices; all harness scenarios documented pass/fail.
 
